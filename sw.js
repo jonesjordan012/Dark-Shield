@@ -1,6 +1,6 @@
 /* Dark Star Origin — offline shell.
    Bump CACHE when you publish a new version of index.html. */
-const CACHE = "darkstar-v1";
+const CACHE = "darkstar-v2";
 const ASSETS = [
   "./", "./index.html", "./manifest.webmanifest",
   "./icon-192.png", "./icon-512.png", "./icon-maskable-512.png"

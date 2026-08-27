@@ -561,12 +561,21 @@ function renderUpkeep(){
   const gaps=S.recs.filter(r=>completeness(r)<1&&!r.obsolete);
   const dead=S.recs.filter(r=>r.obsolete);
   const cold=S.recs.filter(r=>r.tier==="hdd");
+  const kb = storageStatus.usage!=null ? Math.max(1,Math.round(storageStatus.usage/1024))+" KB used" : "";
+  const durable = storageStatus.persisted===true
+    ? `<span style="color:var(--ram)">Durable</span> — the browser has been told not to evict this data.`
+    : storageStatus.persisted===false
+      ? `<span style="color:var(--star)">Best effort</span> — install the app to your home screen or desktop to make it durable.`
+      : `Checking…`;
   const block=(title,note,list,extra)=>`
     <div class="sectionhead"><span class="lbl">${title}</span><span class="count">${list.length}</span></div>
     ${note?`<p class="sub" style="margin-top:0">${note}</p>`:""}
     ${list.length?list.map(r=>recHTML(r,leverage(r),"")).join(""):`<div class="empty">${extra||"Nothing here."}</div>`}`;
   return `<p class="sub">Directories rot. A doctor moves, a practice merges, a suite renumbers. This is where you catch it.</p>
-    ${stale.length?`<button class="ghost" id="verifyAll" style="width:100%;margin-bottom:6px">Mark all ${stale.length} as verified today</button>`:""}
+    <div class="sectionhead" style="margin-top:8px"><span class="lbl">Storage</span><span class="count">${esc(kb)}</span></div>
+    <p class="sub" style="margin-top:0">${durable} ${S.recs.length} record${S.recs.length===1?"":"s"} on this device.</p>
+    ${S.recs.length?`<button class="ghost" id="backupCsv" style="width:100%">Download CSV backup</button>`:""}
+    ${stale.length?`<button class="ghost" id="verifyAll" style="width:100%;margin-top:8px">Mark all ${stale.length} as verified today</button>`:""}
     ${block("Needs verifying",`Not confirmed in over ${STALE_DAYS} days.`,stale,"Everything has been confirmed recently.")}
     ${block("Incomplete","Missing at least one of the four fields.",gaps,"Every record has all four fields.")}
     ${block("Flagged obsolete","Kept for history, sunk in the ranking.",dead,"Nothing flagged.")}
@@ -667,6 +676,7 @@ function wire(){
   });
 
   // upkeep
+  const bk=$("#backupCsv"); if(bk) bk.onclick=exportCsv;
   const va=$("#verifyAll");
   if(va) va.onclick=()=>{
     const now=new Date().toISOString(); let n=0;
@@ -752,11 +762,35 @@ function setMode(m){ S.mode=m; document.body.dataset.mode=m;
 $("#mSimple").onclick=()=>setMode("simple");
 $("#mDeep").onclick=()=>setMode("deep");
 
+/* ===========================================================
+   DURABLE STORAGE
+   Ask the browser to mark this data as persistent. Granted
+   automatically for installed apps; keeps the data out of
+   reach of routine cache eviction.
+   =========================================================== */
+let storageStatus={persisted:null,usage:null,quota:null};
+async function checkStorage(){
+  try{
+    if(navigator.storage){
+      if(navigator.storage.persist){
+        storageStatus.persisted = await navigator.storage.persisted();
+        if(!storageStatus.persisted) storageStatus.persisted = await navigator.storage.persist();
+      }
+      if(navigator.storage.estimate){
+        const e=await navigator.storage.estimate();
+        storageStatus.usage=e.usage; storageStatus.quota=e.quota;
+      }
+    }
+  }catch(e){}
+}
+
 (async function boot(){
   const loaded=await Store.get(KEY);
   if(loaded&&typeof loaded==="object"){ S=Object.assign(S,loaded); S.recs=S.recs||[]; }
   setMode(S.mode||"simple");
   render();
+  await checkStorage();
+  if(VIEW==="upkeep") render();
 })();
 
 if("serviceWorker" in navigator && location.protocol.startsWith("http")){
