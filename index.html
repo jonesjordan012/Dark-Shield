@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Dark Star Origin — Directory</title>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#0B0E14">
+<meta name="description" content="Searchable doctor and practice directory, captured from post-its and spreadsheets.">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Directory">
+<link rel="apple-touch-icon" href="icon-192.png">
+<style>
+:root{
+  --ink:#0B0E14; --panel:#121823; --panel2:#161E2B; --line:#1E2735;
+  --text:#D7DEE8; --muted:#7C8AA0; --dim:#4E5B6E;
+  --star:#E8C468;
+  --ram:#6FD3E0; --ssd:#E8A44C; --hdd:#7E8AA6; --cpu:#B98CE0;
+  --dead:#C4626A;
+  --mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,monospace;
+  --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0;background:var(--ink);color:var(--text);font-family:var(--sans)}
+body{padding-bottom:40px}
+button,input,textarea,select{font:inherit;color:inherit}
+button{background:none;border:none;cursor:pointer}
+.lbl{font-family:var(--mono);font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--muted)}
+
+header{position:sticky;top:0;z-index:40;background:var(--ink);padding:14px 16px 0;border-bottom:1px solid var(--line)}
+.brandrow{display:flex;align-items:center;justify-content:space-between;gap:10px;max-width:820px;margin:0 auto}
+.brand{display:flex;align-items:center;gap:9px}
+.star{width:11px;height:11px;border-radius:50%;background:var(--star);
+  box-shadow:0 0 0 1px rgba(232,196,104,.35),0 0 18px 3px rgba(232,196,104,.32);flex:none}
+.brand h1{font-family:var(--mono);font-size:12.5px;letter-spacing:.3em;text-transform:uppercase;margin:0;font-weight:600}
+.modesw{display:flex;border:1px solid var(--line);border-radius:999px;overflow:hidden}
+.modesw button{padding:5px 11px;font-family:var(--mono);font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--dim)}
+.modesw button[aria-pressed="true"]{background:var(--panel2);color:var(--star)}
+nav{display:flex;gap:18px;margin:12px auto 0;max-width:820px;overflow-x:auto;scrollbar-width:none}
+nav::-webkit-scrollbar{display:none}
+nav button{padding:0 0 9px;font-family:var(--mono);font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--dim);border-bottom:1.5px solid transparent;white-space:nowrap}
+nav button[aria-current="true"]{color:var(--text);border-bottom-color:var(--star)}
+
+main{padding:16px 16px 40px;max-width:820px;margin:0 auto}
+.sub{color:var(--muted);font-size:13px;line-height:1.55;margin:10px 0 16px}
+.empty{border:1px dashed var(--line);border-radius:12px;padding:22px 16px;text-align:center;color:var(--muted);font-size:13px;line-height:1.6}
+.empty b{color:var(--text);font-weight:600}
+.sectionhead{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:26px 0 10px}
+.ghost{border:1px solid var(--line);border-radius:8px;padding:7px 12px;font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.ghost:active{background:var(--panel2)}
+.primary{background:var(--star);color:#14100A;border-radius:9px;padding:11px 16px;font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;font-weight:700}
+.primary:disabled{opacity:.3}
+
+/* search */
+.searchwrap{position:relative;margin-top:4px}
+.searchwrap input{width:100%;background:var(--panel);border:1px solid var(--line);border-radius:12px;
+  padding:14px 42px 14px 14px;font-size:16px;outline:none}
+.searchwrap input:focus{border-color:var(--star)}
+.searchwrap input::placeholder{color:var(--dim)}
+.clearx{position:absolute;right:6px;top:50%;transform:translateY(-50%);width:32px;height:32px;color:var(--dim);font-size:17px}
+.hint{font-family:var(--mono);font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);margin-top:8px}
+
+/* record card */
+.rec{display:flex;gap:11px;align-items:flex-start;padding:13px 0;border-bottom:1px solid var(--line);width:100%;text-align:left}
+.rec:active{background:#0E141E}
+.tierdot{width:7px;height:7px;border-radius:2px;margin-top:7px;flex:none}
+.recbody{flex:1;min-width:0}
+.doc{font-size:15.5px;font-weight:600;line-height:1.35;word-break:break-word}
+.prac{font-size:13.5px;color:var(--text);opacity:.85;margin-top:2px}
+.loc{font-size:12.5px;color:var(--muted);margin-top:5px;line-height:1.5}
+.inside{font-family:var(--mono);font-size:11px;letter-spacing:.06em;color:var(--ram)}
+mark{background:rgba(232,196,104,.22);color:var(--star);border-radius:2px;padding:0 1px}
+.flags{display:flex;flex-wrap:wrap;gap:6px;margin-top:7px}
+.flag{font-family:var(--mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;padding:2px 6px;border-radius:4px;border:1px solid var(--line);color:var(--muted)}
+.flag.obs{color:var(--dead);border-color:rgba(196,98,106,.4)}
+.flag.stale{color:var(--star);border-color:rgba(232,196,104,.35)}
+.flag.gap{color:var(--dead);border-color:rgba(196,98,106,.3)}
+.faded{opacity:.45}
+.deeprow{display:flex;align-items:center;gap:8px;margin-top:8px}
+.massbar{height:2px;background:var(--line);border-radius:2px;flex:1;overflow:hidden}
+.massfill{height:100%;background:var(--star)}
+.massnum{font-family:var(--mono);font-size:10px;color:var(--muted);min-width:24px;text-align:right}
+
+.cutline{position:relative;margin:20px 0 8px;height:1px;background:linear-gradient(90deg,rgba(232,196,104,0),var(--star),rgba(232,196,104,0));box-shadow:0 0 14px rgba(232,196,104,.45)}
+.cutlabel{position:absolute;top:-8px;left:50%;transform:translateX(-50%);background:var(--ink);padding:0 10px;font-family:var(--mono);font-size:9px;letter-spacing:.24em;text-transform:uppercase;color:var(--star)}
+
+/* directory tree */
+.place{border:1px solid var(--line);border-radius:11px;margin-bottom:10px;overflow:hidden}
+.placehead{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:13px 13px;width:100%;text-align:left;background:var(--panel)}
+.placehead h3{margin:0;font-size:14.5px;font-weight:600}
+.count{font-family:var(--mono);font-size:10px;color:var(--dim);letter-spacing:.1em;flex:none}
+.placebody{padding:0 13px 6px}
+.pracgroup{border-top:1px solid var(--line);padding:10px 0 4px}
+.pracname{font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--ssd);margin-bottom:4px}
+.tiny{padding:8px 0;border-bottom:1px solid rgba(30,39,53,.6);display:flex;justify-content:space-between;gap:10px;width:100%;text-align:left;align-items:baseline}
+.tiny:last-child{border-bottom:none}
+.tiny .n{font-size:14px}
+.tiny .r{font-family:var(--mono);font-size:11px;color:var(--ram);flex:none}
+
+/* capture */
+.field{margin:14px 0}
+.field .lbl{display:block;margin-bottom:6px}
+.field textarea,.field input[type=text]{width:100%;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:11px;outline:none;font-size:15px;line-height:1.5;resize:vertical}
+.field textarea:focus,.field input[type=text]:focus{border-color:var(--star)}
+.parsed{border:1px solid var(--line);border-left:2px solid var(--star);border-radius:10px;background:var(--panel);padding:12px;margin-top:12px}
+.pf{display:flex;gap:10px;align-items:center;padding:7px 0;border-bottom:1px solid rgba(30,39,53,.7)}
+.pf:last-child{border-bottom:none}
+.pf .k{font-family:var(--mono);font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);width:88px;flex:none}
+.pf input{flex:1;min-width:0;background:none;border:none;outline:none;font-size:14.5px;padding:3px 0}
+.pf input:focus{box-shadow:0 -1px 0 0 var(--star) inset}
+.pf input::placeholder{color:var(--dim)}
+.seg{display:flex;gap:6px;flex-wrap:wrap}
+.seg button{border:1px solid var(--line);border-radius:7px;padding:7px 10px;font-family:var(--mono);font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.seg button[aria-pressed="true"]{border-color:var(--star);color:var(--star)}
+select{width:100%;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:9px;outline:none;font-size:14px}
+.maprow{display:flex;gap:10px;align-items:center;margin:8px 0}
+.maprow .k{font-family:var(--mono);font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);width:92px;flex:none}
+.preview{overflow-x:auto;border:1px solid var(--line);border-radius:10px;margin-top:10px}
+table{border-collapse:collapse;width:100%;font-size:12.5px}
+th,td{border:1px solid var(--line);padding:7px 9px;text-align:left;white-space:nowrap}
+th{background:var(--panel2);font-family:var(--mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:500}
+
+/* drawer */
+.scrim{position:fixed;inset:0;background:rgba(4,6,10,.72);z-index:60;opacity:0;pointer-events:none;transition:opacity .18s}
+.scrim.on{opacity:1;pointer-events:auto}
+.drawer{position:fixed;left:0;right:0;bottom:0;z-index:61;background:var(--panel);border-top:1px solid var(--line);
+  border-radius:18px 18px 0 0;max-height:90vh;overflow:auto;transform:translateY(102%);transition:transform .22s ease;
+  padding:16px 16px calc(28px + env(safe-area-inset-bottom))}
+.drawer.on{transform:translateY(0)}
+.grab{width:34px;height:4px;border-radius:2px;background:var(--line);margin:0 auto 14px}
+.drawerhead{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:4px}
+.dangerbtn{color:var(--dead);border:1px solid rgba(196,98,106,.35);border-radius:8px;padding:10px 12px;font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;width:100%;margin-top:10px}
+.deeponly{display:none}
+body[data-mode="deep"] .deeponly{display:block}
+.provenance{background:var(--panel2);border:1px solid var(--line);border-radius:9px;padding:11px;font-family:var(--mono);font-size:11.5px;line-height:1.6;color:var(--muted);white-space:pre-wrap;word-break:break-word}
+.toast{position:fixed;left:50%;bottom:34px;transform:translateX(-50%) translateY(10px);background:var(--panel2);border:1px solid var(--line);
+  font-size:12.5px;padding:9px 14px;border-radius:999px;z-index:70;opacity:0;transition:opacity .2s,transform .2s;pointer-events:none}
+.toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+:focus-visible{outline:2px solid var(--star);outline-offset:2px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body data-mode="simple">
+
+<header>
+  <div class="brandrow">
+    <div class="brand"><span class="star"></span><h1>Dark Star Origin</h1></div>
+    <div class="modesw" role="group" aria-label="Working mode">
+      <button id="mSimple" aria-pressed="true">Simple</button>
+      <button id="mDeep" aria-pressed="false">Deep</button>
+    </div>
+  </div>
+  <nav id="nav">
+    <button data-view="find" aria-current="true">Find</button>
+    <button data-view="capture">Capture</button>
+    <button data-view="import">Import</button>
+    <button data-view="directory">Directory</button>
+    <button data-view="upkeep">Upkeep</button>
+  </nav>
+</header>
+
+<main id="view"></main>
+
+<div class="scrim" id="scrim"></div>
+<div class="drawer" id="drawer" role="dialog" aria-modal="true" aria-label="Record"></div>
+<div class="toast" id="toast"></div>
+
+<script>
+"use strict";
+
+/* ===========================================================
+   STORAGE
+   =========================================================== */
+const KEY="darkstar:directory:v1";
+const mem={};
+let storageWarned=false;
+const Store={
+  async get(k){
+    try{ const v=localStorage.getItem(k); return v?JSON.parse(v):null; }
+    catch(e){ return mem[k]!==undefined?mem[k]:null; }
+  },
+  async set(k,v){
+    mem[k]=v;
+    try{ localStorage.setItem(k,JSON.stringify(v)); }
+    catch(e){
+      if(!storageWarned){
+        storageWarned=true;
+        toast(e && e.name==="QuotaExceededError"
+          ? "Storage is full. Export a CSV backup."
+          : "This browser is blocking storage. Export a CSV before you close the tab.");
+      }
+    }
+  }
+};
+
+/* ===========================================================
+   STATE — one record type, four fields.
+   =========================================================== */
+let S={ seq:1, mode:"simple", recs:[] };
+const TIERS={ram:"RAM",ssd:"SSD",hdd:"HDD"};
+const TIERCOLOR={ram:"var(--ram)",ssd:"var(--ssd)",hdd:"var(--hdd)"};
+const TIERWEIGHT={ram:1,ssd:.7,hdd:.15};
+const STALE_DAYS=180;
+
+const uid=()=> "r_"+(S.seq++)+"_"+Math.random().toString(36).slice(2,6);
+let saveTimer=null;
+function save(){ clearTimeout(saveTimer); saveTimer=setTimeout(()=>Store.set(KEY,S),120); }
+const days = iso => iso ? (Date.now()-new Date(iso).getTime())/86400000 : 9999;
+
+function blank(){
+  return { id:uid(), doctor:"", practice:"", place:"", inside:"",
+    tier:"ssd", manual:null, hits:0, lastUsed:null, verified:new Date().toISOString(),
+    obsolete:false, note:"", source:"manual", raw:"", created:new Date().toISOString() };
+}
+
+/* ===========================================================
+   DARK STAR CORE — leverage, 80/20, tiering
+   Reach for a record and it gains mass. Ignore it and it sinks.
+   =========================================================== */
+function completeness(r){
+  return (["doctor","practice","place","inside"].filter(k=>String(r[k]||"").trim()).length)/4;
+}
+function isStale(r){ return days(r.verified) > STALE_DAYS; }
+function leverage(r){
+  if(typeof r.manual==="number") return r.obsolete?Math.round(r.manual*.3):r.manual;
+  const use = Math.min(1, (r.hits||0)/8);
+  const recent = r.lastUsed ? Math.max(0, 1-days(r.lastUsed)/60) : 0;
+  const fresh = Math.max(0, 1-days(r.verified)/365);
+  let v = (use*.34 + recent*.24 + completeness(r)*.24 + (TIERWEIGHT[r.tier]??.5)*.18)*100;
+  v *= (0.75 + 0.25*fresh);
+  if(r.obsolete) v*=.25;
+  return Math.max(0,Math.min(100,Math.round(v)));
+}
+function ranked(list){
+  return (list||S.recs).map(r=>({r,lev:leverage(r)})).sort((a,b)=>b.lev-a.lev);
+}
+function touch(r){ r.hits=(r.hits||0)+1; r.lastUsed=new Date().toISOString();
+  if(r.tier==="hdd") r.tier="ssd"; save(); }
+
+/* ===========================================================
+   SEARCH — every token has to land somewhere
+   =========================================================== */
+const norm = s => String(s||"").toLowerCase().replace(/[.,#]/g," ").replace(/\s+/g," ").trim();
+function haystack(r){ return norm([r.doctor,r.practice,r.place,r.inside,r.note].join(" ")); }
+function search(q){
+  const toks = norm(q).split(" ").filter(Boolean);
+  if(!toks.length) return null;
+  const hits=[];
+  for(const r of S.recs){
+    const h=haystack(r);
+    if(!toks.every(t=>h.includes(t))) continue;
+    let boost=0;
+    const d=norm(r.doctor), p=norm(r.practice);
+    for(const t of toks){
+      if(d.startsWith(t)||d.split(" ").some(w=>w.startsWith(t))) boost+=18;
+      if(p.split(" ").some(w=>w.startsWith(t))) boost+=10;
+    }
+    hits.push({r, lev:leverage(r)+boost});
+  }
+  return hits.sort((a,b)=>b.lev-a.lev);
+}
+function mark(text,q){
+  const t=esc(text||"");
+  const toks=norm(q).split(" ").filter(Boolean);
+  if(!toks.length) return t;
+  let out=t;
+  for(const tk of toks){
+    const re=new RegExp("("+tk.replace(/[.*+?^${}()|[\]\\]/g,"\\$&")+")","ig");
+    out=out.replace(re,"<mark>$1</mark>");
+  }
+  return out;
+}
+
+/* ===========================================================
+   POST-IT PARSER — messy handwriting typed in, four fields out
+   =========================================================== */
+const RE_UNIT=/(?:\b(?:\d+(?:st|nd|rd|th)?|basement|ground|lower|upper|main|top)\s+)?\b(?:suite|ste|room|rm|floor|flr|fl|level|lvl|unit|office|wing|dept|department)\b\.?(?:\s*#?\s*[A-Za-z0-9-]*\d[A-Za-z0-9-]*)?/gi;
+const RE_WHOLEINSIDE=/^(?:basement|lobby|mezzanine|penthouse|annex|ground floor|reception|front desk)\b/i;
+const RE_BARENUM=/^#?\s*[A-Za-z]?-?\d{1,4}[A-Za-z]?$/;
+const RE_STREET=/\b(?:street|st|avenue|ave|road|rd|boulevard|blvd|drive|dr|lane|ln|way|court|ct|place|pl|parkway|pkwy|highway|hwy|circle|cir|terrace|ter)\b\.?/i;
+const RE_ZIP=/\b\d{5}(?:-\d{4})?\b/;
+const RE_CITYST=/\b[A-Za-z][A-Za-z .'-]+,\s*[A-Z]{2}\b/;
+const RE_STATE=/^[A-Z]{2}\b/;
+const RE_DOC=/\b(?:dr|doctor|md|d\.?o\.?|dds|dpm|dmd|pa-c|np|phd|rn|mbbs)\b\.?/i;
+const RE_CRED=/^(?:m\.?d\.?|d\.?o\.?|dds|dmd|dpm|np|pa-?c|phd|rn|mbbs|jr|sr|ii|iii)\.?$/i;
+const RE_PRACTICE=/\b(?:clinic|medical|health|healthcare|associates|assoc|practice|group|center|centre|hospital|family|care|pediatric|orthopedic|ortho|dental|dermatology|cardiology|surgery|surgical|physicians|specialists|institute|partners|wellness|imaging|labs?|pllc|llc|pc|p\.c\.|inc)\b/i;
+
+function splitParts(text){
+  // Real separators first. Commas only as a fallback — they live inside addresses.
+  let parts=text.split(/\n|\||;|\s+[–—]+\s+|\s+-\s+/).map(s=>s.trim()).filter(Boolean);
+  if(parts.length>1) return parts;
+  parts=text.split(/,\s*/).map(s=>s.trim()).filter(Boolean);
+  // Put addresses and credentials back together
+  const merged=[];
+  for(const p of parts){
+    const prev=merged[merged.length-1];
+    if(prev && RE_CRED.test(p)){ merged[merged.length-1]=prev+", "+p; continue; }
+    if(prev && !RE_PRACTICE.test(p) && !RE_UNIT.test(p) &&
+       (/\d/.test(prev)&&RE_STREET.test(prev) || RE_STATE.test(prev)) &&
+       (RE_ZIP.test(p)||RE_STATE.test(p)||/^[A-Za-z][A-Za-z .'-]*$/.test(p))){
+      merged[merged.length-1]=prev+", "+p; continue;
+    }
+    merged.push(p);
+  }
+  return merged;
+}
+function parseNote(text){
+  const out={doctor:"",practice:"",place:"",inside:""};
+  if(!text.trim()) return out;
+  let parts=splitParts(text);
+  const used=new Array(parts.length).fill(false);
+
+  // inside-building first: it is the most distinctive pattern
+  parts.forEach((p,i)=>{
+    if(out.inside||used[i]) return;
+    if(RE_WHOLEINSIDE.test(p)||RE_BARENUM.test(p)){ out.inside=p; used[i]=true; return; }
+    RE_UNIT.lastIndex=0;
+    const ms=p.match(RE_UNIT);
+    if(ms&&ms.length){
+      out.inside=ms.map(m=>m.replace(/\s+/g," ").trim()).join(" ");
+      let rest=p;
+      ms.forEach(m=>{ rest=rest.replace(m,""); });
+      rest=rest.replace(/\s{2,}/g," ").replace(/^[\s,\-–—]+|[\s,\-–—]+$/g,"");
+      if(rest) parts[i]=rest; else used[i]=true;
+    }
+  });
+  // street address: needs a number, so "Kim, MD" can't pose as Maryland
+  parts.forEach((p,i)=>{
+    if(out.place||used[i]) return;
+    if(/\d/.test(p)&&(RE_STREET.test(p)||RE_ZIP.test(p)||RE_CITYST.test(p))){ out.place=p; used[i]=true; }
+  });
+  // doctor
+  parts.forEach((p,i)=>{
+    if(out.doctor||used[i]) return;
+    if(RE_DOC.test(p)&&!RE_PRACTICE.test(p)){ out.doctor=p; used[i]=true; }
+  });
+  // city-only location, once the name is claimed
+  parts.forEach((p,i)=>{
+    if(out.place||used[i]) return;
+    if(RE_CITYST.test(p)||RE_ZIP.test(p)){ out.place=p; used[i]=true; }
+  });
+  // practice
+  parts.forEach((p,i)=>{
+    if(out.practice||used[i]) return;
+    if(RE_PRACTICE.test(p)){ out.practice=p; used[i]=true; }
+  });
+  // whatever is left, in order: doctor, practice, place
+  const left=parts.filter((p,i)=>!used[i]);
+  for(const p of left){
+    if(!out.doctor){ out.doctor=p; continue; }
+    if(!out.practice){ out.practice=p; continue; }
+    if(!out.place){ out.place=p; continue; }
+    if(!out.inside){ out.inside=p; }
+  }
+  return out;
+}
+
+/* ===========================================================
+   HELPERS
+   =========================================================== */
+const $=s=>document.querySelector(s);
+const esc=t=>String(t==null?"":t).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+let VIEW="find", QUERY="";
+function toast(m){ const t=$("#toast"); t.textContent=m; t.classList.add("on");
+  clearTimeout(t._t); t._t=setTimeout(()=>t.classList.remove("on"),1700); }
+
+function recHTML(r,lev,q){
+  const gaps=["doctor","practice","place","inside"].filter(k=>!String(r[k]||"").trim());
+  return `<button class="rec ${r.obsolete?"faded":""}" data-open="${r.id}">
+    <span class="tierdot" style="background:${TIERCOLOR[r.tier]}"></span>
+    <span class="recbody">
+      <span class="doc">${mark(r.doctor||"Name missing",q)}</span>
+      ${r.practice?`<span class="prac">${mark(r.practice,q)}</span>`:""}
+      <span class="loc">${r.place?mark(r.place,q):`<span style="color:var(--dim)">no earth location</span>`}
+        ${r.inside?` · <span class="inside">${mark(r.inside,q)}</span>`:""}</span>
+      ${(r.obsolete||isStale(r)||gaps.length)?`<span class="flags">
+        ${r.obsolete?`<span class="flag obs">obsolete</span>`:""}
+        ${!r.obsolete&&isStale(r)?`<span class="flag stale">verify</span>`:""}
+        ${gaps.length?`<span class="flag gap">${gaps.length} field${gaps.length>1?"s":""} blank</span>`:""}
+      </span>`:""}
+      <span class="deeponly deeprow">
+        <span class="lbl">${TIERS[r.tier]}</span>
+        <span class="massbar"><span class="massfill" style="width:${lev}%"></span></span>
+        <span class="massnum">${lev}</span>
+        <span class="lbl">${r.hits||0} reaches</span>
+      </span>
+    </span>
+  </button>`;
+}
+
+/* ===========================================================
+   VIEW — FIND
+   =========================================================== */
+function renderFind(){
+  const bar=`<div class="searchwrap">
+      <input id="q" type="text" inputmode="search" autocomplete="off"
+        placeholder="Doctor, practice, city, suite…" value="${esc(QUERY)}">
+      ${QUERY?`<button class="clearx" id="qclear" aria-label="Clear search">✕</button>`:""}
+    </div>`;
+
+  if(!S.recs.length){
+    return bar+`<div class="empty" style="margin-top:18px"><b>The directory is empty.</b><br>
+      Type a post-it into Capture, or paste a block of spreadsheet rows into Import.</div>`;
+  }
+  const res=search(QUERY);
+  if(res){
+    if(!res.length) return bar+`<div class="empty" style="margin-top:18px"><b>No match for “${esc(QUERY)}”.</b><br>
+      Try a surname, a street, or just a suite number. Every word you type has to appear somewhere in the record.</div>`;
+    return bar+`<p class="hint">${res.length} match${res.length===1?"":"es"}</p>
+      <div>${res.map(x=>recHTML(x.r,leverage(x.r),QUERY)).join("")}</div>`;
+  }
+
+  const all=ranked();
+  const cut=Math.max(1,Math.ceil(all.length*0.2));
+  const top=all.slice(0,cut), rest=all.slice(cut);
+  return bar+`
+    <p class="hint">${S.recs.length} record${S.recs.length===1?"":"s"} · start typing to search</p>
+    <div class="sectionhead" style="margin-top:18px"><span class="lbl">Reached for most</span></div>
+    <div>${top.map(x=>recHTML(x.r,x.lev,"")).join("")}</div>
+    ${rest.length?`
+      <div class="cutline"><span class="cutlabel">20% line</span></div>
+      <button class="ghost" id="showRest" aria-expanded="false">Show the other ${rest.length}</button>
+      <div id="restList" hidden>${rest.map(x=>recHTML(x.r,x.lev,"")).join("")}</div>`:""}`;
+}
+
+/* ===========================================================
+   VIEW — CAPTURE (post-it)
+   =========================================================== */
+let draft=null;
+function renderCapture(){
+  draft=draft||blank();
+  return `<p class="sub">Type the post-it exactly as it's written. The four fields get pulled out below — correct anything that lands wrong before you save.</p>
+    <div class="field">
+      <span class="lbl">Post-it</span>
+      <textarea id="noteIn" rows="4" placeholder="Dr. Alvarez&#10;Northside Family Medicine&#10;418 Cedar St, Ashland, OR 97520&#10;Suite 210, west elevators">${esc(draft.raw||"")}</textarea>
+    </div>
+    <div class="parsed">
+      <div class="pf"><span class="k">Doctor</span><input id="fDoctor" value="${esc(draft.doctor)}" placeholder="who"></div>
+      <div class="pf"><span class="k">Practice</span><input id="fPractice" value="${esc(draft.practice)}" placeholder="where they work"></div>
+      <div class="pf"><span class="k">On earth</span><input id="fPlace" value="${esc(draft.place)}" placeholder="address, city"></div>
+      <div class="pf"><span class="k">In building</span><input id="fInside" value="${esc(draft.inside)}" placeholder="suite, floor, room"></div>
+    </div>
+    <div class="deeponly">
+      <div class="field"><span class="lbl">Note</span>
+        <input type="text" id="fNote" value="${esc(draft.note||"")}" placeholder="parking, entrance, hours — anything the post-it says"></div>
+      <div class="field"><span class="lbl">Tier</span>
+        <div class="seg">${Object.keys(TIERS).map(t=>`<button data-tier="${t}" aria-pressed="${draft.tier===t}">${TIERS[t]}</button>`).join("")}</div>
+      </div>
+    </div>
+    <button class="primary" id="saveRec" style="width:100%;margin-top:16px" ${draft.doctor||draft.practice?"":"disabled"}>Save to directory</button>
+    <button class="ghost" id="clearDraft" style="width:100%;margin-top:8px">Clear</button>`;
+}
+function readDraft(){
+  draft.doctor=$("#fDoctor").value.trim();
+  draft.practice=$("#fPractice").value.trim();
+  draft.place=$("#fPlace").value.trim();
+  draft.inside=$("#fInside").value.trim();
+  const n=$("#fNote"); if(n) draft.note=n.value.trim();
+  draft.raw=$("#noteIn").value;
+}
+
+/* ===========================================================
+   VIEW — IMPORT (spreadsheet paste)
+   =========================================================== */
+let imp={ text:"", rows:[], header:true, map:{doctor:0,practice:1,place:2,inside:3} };
+function splitRows(text){
+  const lines=text.replace(/\r/g,"").split("\n").filter(l=>l.trim());
+  const delim = lines[0] && lines[0].includes("\t") ? "\t" : ",";
+  return lines.map(l=>splitLine(l,delim));
+}
+function splitLine(line,d){
+  const out=[]; let cur="", q=false;
+  for(let i=0;i<line.length;i++){
+    const c=line[i];
+    if(c==='"'){ if(q&&line[i+1]==='"'){cur+='"';i++;} else q=!q; }
+    else if(c===d&&!q){ out.push(cur.trim()); cur=""; }
+    else cur+=c;
+  }
+  out.push(cur.trim()); return out;
+}
+function guessMap(head){
+  const find=(...keys)=>{
+    const i=head.findIndex(h=>keys.some(k=>norm(h).includes(k)));
+    return i;
+  };
+  return {
+    doctor:   find("doctor","provider","physician","name","dr"),
+    practice: find("practice","clinic","office","org","group","employer","facility"),
+    place:    find("address","location","city","street","site","earth"),
+    inside:   find("suite","room","floor","inside","unit","ste")
+  };
+}
+function renderImport(){
+  const head = imp.rows.length ? imp.rows[0] : [];
+  const cols = imp.rows.length ? imp.rows[0].length : 0;
+  const opts = i => `<option value="-1">— none —</option>`+
+    Array.from({length:cols},(_,c)=>`<option value="${c}" ${imp.map[i]===c?"selected":""}>${
+      esc(imp.header && head[c] ? head[c] : "Column "+String.fromCharCode(65+c))}</option>`).join("");
+  const body = imp.header ? imp.rows.slice(1) : imp.rows;
+  return `<p class="sub">Copy the rows out of your spreadsheet and paste them here. Tabs or commas both work.</p>
+    <div class="field">
+      <span class="lbl">Pasted rows</span>
+      <textarea id="impIn" rows="5" placeholder="Doctor	Practice	Address	Suite&#10;Dr. Alvarez	Northside Family Medicine	418 Cedar St, Ashland OR	Suite 210">${esc(imp.text)}</textarea>
+    </div>
+    ${imp.rows.length?`
+      <div class="seg"><button id="hdrTgl" aria-pressed="${imp.header}">First row is a header</button></div>
+      <div class="sectionhead"><span class="lbl">Match your columns</span><span class="count">${body.length} row${body.length===1?"":"s"}</span></div>
+      ${["doctor","practice","place","inside"].map(k=>`<div class="maprow">
+        <span class="k">${k==="place"?"On earth":k==="inside"?"In building":k}</span>
+        <select data-map="${k}">${opts(k)}</select></div>`).join("")}
+      <div class="preview"><table><thead><tr><th>Doctor</th><th>Practice</th><th>On earth</th><th>In building</th></tr></thead>
+        <tbody>${body.slice(0,5).map(r=>`<tr>${["doctor","practice","place","inside"].map(k=>
+          `<td>${esc(imp.map[k]>=0?(r[imp.map[k]]||""):"")||"—"}</td>`).join("")}</tr>`).join("")}</tbody></table></div>
+      ${body.length>5?`<p class="hint">Showing the first 5 of ${body.length}.</p>`:""}
+      <button class="primary" id="doImport" style="width:100%;margin-top:16px">Import ${body.length} record${body.length===1?"":"s"}</button>
+    `:`<div class="empty">Nothing pasted yet. One row per person, one column per field.</div>`}
+    ${S.recs.length?`<button class="ghost" id="exportCsv" style="width:100%;margin-top:10px">Export directory as CSV</button>`:""}`;
+}
+
+/* ===========================================================
+   VIEW — DIRECTORY (the pyramid, made navigable)
+   Earth location → practice → doctor → room
+   =========================================================== */
+let openPlaces={};
+function renderDirectory(){
+  if(!S.recs.length) return `<div class="empty"><b>Nothing to navigate yet.</b><br>Capture or import a few records first.</div>`;
+  const places={};
+  for(const r of S.recs){
+    const p=(r.place||"Location unknown").trim();
+    (places[p]=places[p]||[]).push(r);
+  }
+  const keys=Object.keys(places).sort((a,b)=>places[b].length-places[a].length||a.localeCompare(b));
+  return `<p class="sub">Widest layer first: where on earth, then which practice, then who, then which room. Tap a level to open it.</p>
+    ${keys.map(place=>{
+      const rs=places[place];
+      const open=!!openPlaces[place];
+      const pracs={};
+      for(const r of rs){ const k=(r.practice||"Practice unknown").trim(); (pracs[k]=pracs[k]||[]).push(r); }
+      return `<div class="place">
+        <button class="placehead" data-place="${esc(place)}" aria-expanded="${open}">
+          <h3>${esc(place)}</h3>
+          <span class="count">${Object.keys(pracs).length} practice${Object.keys(pracs).length>1?"s":""} · ${rs.length} ${rs.length===1?"person":"people"} ${open?"▾":"▸"}</span>
+        </button>
+        ${open?`<div class="placebody">${Object.keys(pracs).sort().map(pk=>`
+          <div class="pracgroup"><div class="pracname">${esc(pk)}</div>
+            ${pracs[pk].sort((a,b)=>(a.doctor||"").localeCompare(b.doctor||"")).map(r=>`
+              <button class="tiny ${r.obsolete?"faded":""}" data-open="${r.id}">
+                <span class="n">${esc(r.doctor||"Name missing")}</span>
+                <span class="r">${esc(r.inside||"—")}</span></button>`).join("")}
+          </div>`).join("")}</div>`:""}
+      </div>`;
+    }).join("")}`;
+}
+
+/* ===========================================================
+   VIEW — UPKEEP (obsolescence is real)
+   =========================================================== */
+function renderUpkeep(){
+  const stale=S.recs.filter(r=>!r.obsolete&&isStale(r));
+  const gaps=S.recs.filter(r=>completeness(r)<1&&!r.obsolete);
+  const dead=S.recs.filter(r=>r.obsolete);
+  const cold=S.recs.filter(r=>r.tier==="hdd");
+  const block=(title,note,list,extra)=>`
+    <div class="sectionhead"><span class="lbl">${title}</span><span class="count">${list.length}</span></div>
+    ${note?`<p class="sub" style="margin-top:0">${note}</p>`:""}
+    ${list.length?list.map(r=>recHTML(r,leverage(r),"")).join(""):`<div class="empty">${extra||"Nothing here."}</div>`}`;
+  return `<p class="sub">Directories rot. A doctor moves, a practice merges, a suite renumbers. This is where you catch it.</p>
+    ${stale.length?`<button class="ghost" id="verifyAll" style="width:100%;margin-bottom:6px">Mark all ${stale.length} as verified today</button>`:""}
+    ${block("Needs verifying",`Not confirmed in over ${STALE_DAYS} days.`,stale,"Everything has been confirmed recently.")}
+    ${block("Incomplete","Missing at least one of the four fields.",gaps,"Every record has all four fields.")}
+    ${block("Flagged obsolete","Kept for history, sunk in the ranking.",dead,"Nothing flagged.")}
+    ${block("HDD — cold","Demoted out of the working set.",cold,"Nothing archived.")}`;
+}
+
+/* ===========================================================
+   RENDER + WIRING
+   =========================================================== */
+function render(){
+  $("#view").innerHTML =
+    VIEW==="find"?renderFind():
+    VIEW==="capture"?renderCapture():
+    VIEW==="import"?renderImport():
+    VIEW==="directory"?renderDirectory():renderUpkeep();
+  document.querySelectorAll("#nav button").forEach(b=>b.setAttribute("aria-current",b.dataset.view===VIEW?"true":"false"));
+  wire();
+}
+function wire(){
+  const q=$("#q");
+  if(q){
+    q.oninput=()=>{ QUERY=q.value; const pos=q.selectionStart; render();
+      const nq=$("#q"); nq.focus(); try{nq.setSelectionRange(pos,pos);}catch(e){} };
+    const cx=$("#qclear"); if(cx) cx.onclick=()=>{ QUERY=""; render(); $("#q").focus(); };
+  }
+  const sr=$("#showRest");
+  if(sr) sr.onclick=()=>{ const l=$("#restList"); const open=!l.hidden; l.hidden=open;
+    sr.setAttribute("aria-expanded",String(!open));
+    sr.textContent=open?`Show the other ${l.children.length}`:"Hide"; };
+
+  document.querySelectorAll("[data-open]").forEach(el=>el.onclick=()=>openRec(el.dataset.open));
+
+  // capture
+  const ni=$("#noteIn");
+  if(ni) ni.oninput=()=>{
+    const p=parseNote(ni.value);
+    draft.raw=ni.value; draft.source="post-it";
+    Object.assign(draft,p);
+    ["doctor","practice","place","inside"].forEach(k=>{
+      const el=document.getElementById("f"+k[0].toUpperCase()+k.slice(1));
+      if(el && document.activeElement!==el) el.value=draft[k];
+    });
+    $("#saveRec").disabled = !(draft.doctor||draft.practice);
+  };
+  ["fDoctor","fPractice","fPlace","fInside","fNote"].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el) el.oninput=()=>{ readDraft(); const b=$("#saveRec"); if(b) b.disabled=!(draft.doctor||draft.practice); };
+  });
+  document.querySelectorAll("#view [data-tier]").forEach(b=>b.onclick=()=>{
+    readDraft(); draft.tier=b.dataset.tier; render();
+  });
+  const sv=$("#saveRec");
+  if(sv) sv.onclick=()=>{
+    readDraft();
+    if(!draft.doctor&&!draft.practice) return;
+    S.recs.unshift(draft); save();
+    toast(`Saved ${draft.doctor||draft.practice}`);
+    draft=blank(); render();
+  };
+  const cd=$("#clearDraft"); if(cd) cd.onclick=()=>{ draft=blank(); render(); };
+
+  // import
+  const ii=$("#impIn");
+  if(ii) ii.oninput=()=>{
+    imp.text=ii.value; imp.rows=splitRows(ii.value);
+    if(imp.rows.length){
+      const head=imp.rows[0];
+      const looksHeader = head.some(h=>/doctor|practice|address|suite|name|location|room|floor|clinic/i.test(h));
+      imp.header=looksHeader;
+      const g=looksHeader?guessMap(head):{doctor:0,practice:1,place:2,inside:3};
+      imp.map={ doctor:g.doctor??0, practice:g.practice??1, place:g.place??2, inside:g.inside??3 };
+    }
+    const pos=ii.selectionStart; render();
+    const n=$("#impIn"); n.focus(); try{n.setSelectionRange(pos,pos);}catch(e){}
+  };
+  const ht=$("#hdrTgl"); if(ht) ht.onclick=()=>{ imp.header=!imp.header; render(); };
+  document.querySelectorAll("[data-map]").forEach(sel=>sel.onchange=()=>{
+    imp.map[sel.dataset.map]=parseInt(sel.value,10); render();
+  });
+  const di=$("#doImport");
+  if(di) di.onclick=()=>{
+    const body=imp.header?imp.rows.slice(1):imp.rows;
+    let n=0;
+    for(const row of body){
+      const r=blank(); r.source="spreadsheet"; r.raw=row.join(" | ");
+      ["doctor","practice","place","inside"].forEach(k=>{ const c=imp.map[k]; r[k]=c>=0?(row[c]||"").trim():""; });
+      if(!r.doctor&&!r.practice) continue;
+      S.recs.push(r); n++;
+    }
+    save(); imp={text:"",rows:[],header:true,map:{doctor:0,practice:1,place:2,inside:3}};
+    VIEW="find"; QUERY=""; render(); toast(`Imported ${n} record${n===1?"":"s"}`);
+  };
+  const ex=$("#exportCsv"); if(ex) ex.onclick=exportCsv;
+
+  // directory
+  document.querySelectorAll("[data-place]").forEach(b=>b.onclick=()=>{
+    const k=b.dataset.place; openPlaces[k]=!openPlaces[k]; render();
+  });
+
+  // upkeep
+  const va=$("#verifyAll");
+  if(va) va.onclick=()=>{
+    const now=new Date().toISOString(); let n=0;
+    S.recs.forEach(r=>{ if(!r.obsolete&&isStale(r)){ r.verified=now; n++; } });
+    save(); render(); toast(`${n} marked verified`);
+  };
+}
+
+/* ===========================================================
+   RECORD DRAWER
+   =========================================================== */
+function closeDrawer(){ $("#drawer").classList.remove("on"); $("#scrim").classList.remove("on"); }
+$("#scrim").onclick=()=>{ closeDrawer(); render(); };
+
+function openRec(id){
+  const r=S.recs.find(x=>x.id===id); if(!r) return;
+  touch(r);
+  const d=$("#drawer");
+  d.innerHTML=`<div class="grab"></div>
+    <div class="drawerhead"><span class="lbl">Record${r.obsolete?" · obsolete":""}</span>
+      <button class="ghost" id="dClose">Done</button></div>
+    <div class="parsed" style="margin-top:12px">
+      <div class="pf"><span class="k">Doctor</span><input id="eDoctor" value="${esc(r.doctor)}" placeholder="who"></div>
+      <div class="pf"><span class="k">Practice</span><input id="ePractice" value="${esc(r.practice)}" placeholder="where they work"></div>
+      <div class="pf"><span class="k">On earth</span><input id="ePlace" value="${esc(r.place)}" placeholder="address, city"></div>
+      <div class="pf"><span class="k">In building</span><input id="eInside" value="${esc(r.inside)}" placeholder="suite, floor, room"></div>
+    </div>
+    <div class="field"><span class="lbl">Note</span>
+      <input type="text" id="eNote" value="${esc(r.note||"")}" placeholder="entrance, parking, anything else"></div>
+    <div class="field">
+      <span class="lbl">Last verified — ${r.verified?Math.round(days(r.verified))+" days ago":"never"}</span>
+      <div class="seg">
+        <button id="eVerify">Confirm still correct</button>
+        <button id="eObs" aria-pressed="${r.obsolete}">${r.obsolete?"Obsolete ✓":"Flag obsolete"}</button>
+      </div>
+    </div>
+    <div class="deeponly">
+      <div class="field"><span class="lbl">Tier — ${TIERS[r.tier]}</span>
+        <div class="seg">${Object.keys(TIERS).map(t=>`<button data-etier="${t}" aria-pressed="${r.tier===t}">${TIERS[t]}</button>`).join("")}</div></div>
+      <div class="field"><span class="lbl">Leverage ${leverage(r)} · reached ${r.hits||0} time${r.hits===1?"":"s"} · ${Math.round(completeness(r)*100)}% complete</span></div>
+      ${r.raw?`<div class="field"><span class="lbl">Captured from ${esc(r.source)}</span>
+        <div class="provenance">${esc(r.raw)}</div></div>`:""}
+    </div>
+    <button class="dangerbtn" id="eDelete">Delete record</button>`;
+  d.classList.add("on"); $("#scrim").classList.add("on"); d.scrollTop=0;
+
+  const commit=()=>{
+    r.doctor=$("#eDoctor").value.trim(); r.practice=$("#ePractice").value.trim();
+    r.place=$("#ePlace").value.trim();   r.inside=$("#eInside").value.trim();
+    r.note=$("#eNote").value.trim(); save();
+  };
+  $("#dClose").onclick=()=>{ commit(); closeDrawer(); render(); };
+  $("#eVerify").onclick=()=>{ commit(); r.verified=new Date().toISOString(); r.obsolete=false; save();
+    closeDrawer(); render(); toast("Verified today"); };
+  $("#eObs").onclick=()=>{ commit(); r.obsolete=!r.obsolete; if(r.obsolete) r.tier="hdd"; save();
+    closeDrawer(); render(); toast(r.obsolete?"Flagged obsolete":"Flag removed"); };
+  document.querySelectorAll("[data-etier]").forEach(b=>b.onclick=()=>{ commit(); r.tier=b.dataset.etier; save(); openRec(id); });
+  $("#eDelete").onclick=()=>{ S.recs=S.recs.filter(x=>x.id!==id); save(); closeDrawer(); render(); toast("Deleted"); };
+}
+
+/* ===========================================================
+   EXPORT
+   =========================================================== */
+function exportCsv(){
+  const q=v=>`"${String(v||"").replace(/"/g,'""')}"`;
+  const lines=[["Doctor","Practice","On earth","In building","Note","Tier","Last verified"].map(q).join(",")];
+  for(const r of S.recs) lines.push([r.doctor,r.practice,r.place,r.inside,r.note,TIERS[r.tier],
+    r.verified?r.verified.slice(0,10):""].map(q).join(","));
+  const blob=new Blob([lines.join("\n")],{type:"text/csv"});
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(blob); a.download="directory.csv"; a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href),2000);
+  toast("CSV downloaded");
+}
+
+/* ===========================================================
+   CHROME + BOOT
+   =========================================================== */
+document.querySelectorAll("#nav button").forEach(b=>b.onclick=()=>{ VIEW=b.dataset.view; render(); window.scrollTo(0,0); });
+function setMode(m){ S.mode=m; document.body.dataset.mode=m;
+  $("#mSimple").setAttribute("aria-pressed",String(m==="simple"));
+  $("#mDeep").setAttribute("aria-pressed",String(m==="deep")); save(); }
+$("#mSimple").onclick=()=>setMode("simple");
+$("#mDeep").onclick=()=>setMode("deep");
+
+(async function boot(){
+  const loaded=await Store.get(KEY);
+  if(loaded&&typeof loaded==="object"){ S=Object.assign(S,loaded); S.recs=S.recs||[]; }
+  setMode(S.mode||"simple");
+  render();
+})();
+
+if("serviceWorker" in navigator && location.protocol.startsWith("http")){
+  window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));
+}
+</script>
+</body>
+</html>
